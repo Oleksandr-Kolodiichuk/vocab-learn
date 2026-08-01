@@ -28,17 +28,6 @@ export default function ReviewSession() {
     }
   }, [cards, index]);
 
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (cards === null) return <p>Wird geladen...</p>;
-
-  if (cards.length === 0) {
-    return (
-      <div className="empty-state">
-        <p>Es gibt noch keine Karten — füge Wörter im Tab "Alle Karten" hinzu</p>
-      </div>
-    );
-  }
-
   const goPrev = () => {
     setDirection('prev');
     setIndex((i) => (i - 1 + cards.length) % cards.length);
@@ -49,10 +38,32 @@ export default function ReviewSession() {
     setIndex((i) => (i + 1) % cards.length);
   };
 
+  useEffect(() => {
+    if (!cards || cards.length === 0) return;
+    const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (e.key === 'ArrowLeft') goPrev();
+      else if (e.key === 'ArrowRight') goNext();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cards]);
+
   const handleToggleFlag = (id, flagged) => {
     setCards((prev) => prev.map((c) => (c.id === id ? { ...c, flagged } : c)));
     api.updateCard(id, { flagged }).catch(() => {});
   };
+
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (cards === null) return <p>Wird geladen...</p>;
+
+  if (cards.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>Es gibt noch keine Karten — füge Wörter im Tab "Alle Karten" hinzu</p>
+      </div>
+    );
+  }
 
   const card = cards[index];
   const progress = ((index + 1) / cards.length) * 100;

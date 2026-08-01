@@ -28,17 +28,6 @@ export default function FlaggedWords() {
     }
   }, [cards, index]);
 
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (cards === null) return <p>Wird geladen...</p>;
-
-  if (cards.length === 0) {
-    return (
-      <div className="empty-state">
-        <p>Noch keine Wörter markiert — tippe auf ☆ auf einer Karte, um sie hier zu sammeln</p>
-      </div>
-    );
-  }
-
   const goPrev = () => {
     setDirection('prev');
     setIndex((i) => (i - 1 + cards.length) % cards.length);
@@ -48,6 +37,17 @@ export default function FlaggedWords() {
     setDirection('next');
     setIndex((i) => (i + 1) % cards.length);
   };
+
+  useEffect(() => {
+    if (!cards || cards.length === 0) return;
+    const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      if (e.key === 'ArrowLeft') goPrev();
+      else if (e.key === 'ArrowRight') goNext();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cards]);
 
   const handleToggleFlag = (id, flagged) => {
     api.updateCard(id, { flagged }).catch(() => {});
@@ -61,6 +61,17 @@ export default function FlaggedWords() {
       return next;
     });
   };
+
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (cards === null) return <p>Wird geladen...</p>;
+
+  if (cards.length === 0) {
+    return (
+      <div className="empty-state">
+        <p>Noch keine Wörter markiert — tippe auf ☆ auf einer Karte, um sie hier zu sammeln</p>
+      </div>
+    );
+  }
 
   const card = cards[index];
   const progress = ((index + 1) / cards.length) * 100;
