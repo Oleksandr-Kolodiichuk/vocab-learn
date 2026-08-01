@@ -1,22 +1,32 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
+import Flashcard from './Flashcard';
+
+const LAST_CARD_KEY = 'vocab-learn:lastFlaggedCardId';
 
 export default function FlaggedWords() {
   const [cards, setCards] = useState(null);
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState('next');
   const [error, setError] = useState(null);
 
-  const load = () => {
-    api.getFlaggedCards().then(setCards).catch((err) => setError(err.message));
-  };
-
   useEffect(() => {
-    load();
+    api
+      .getFlaggedCards()
+      .then((data) => {
+        setCards(data);
+        const lastId = Number(localStorage.getItem(LAST_CARD_KEY));
+        const savedIndex = data.findIndex((c) => c.id === lastId);
+        setIndex(savedIndex >= 0 ? savedIndex : 0);
+      })
+      .catch((err) => setError(err.message));
   }, []);
 
-  const handleUnflag = async (id) => {
-    setCards((prev) => prev.filter((c) => c.id !== id));
-    await api.updateCard(id, { flagged: false }).catch(() => {});
-  };
+  useEffect(() => {
+    if (cards && cards[index]) {
+      localStorage.setItem(LAST_CARD_KEY, cards[index].id);
+    }
+  }, [cards, index]);
 
   if (error) return <p className="error">Fehler: {error}</p>;
   if (cards === null) return <p>Wird geladen...</p>;
@@ -29,28 +39,47 @@ export default function FlaggedWords() {
     );
   }
 
+  const goPrev = () => {
+    setDirection('prev');
+    setIndex((i) => (i - 1 + cards.length) % cards.length);
+  };
+
+  const goNext = () => {
+    setDirection('next');
+    setIndex((i) => (i + 1) % cards.length);
+  };
+
+  const handleToggleFlag = (id, flagged) => {
+    api.updateCard(id, { flagged }).catch(() => {});
+    if (flagged) {
+      setCards((prev) => prev.map((c) => (c.id === id ? { ...c, flagged } : c)));
+      return;
+    }
+    setCards((prev) => {
+      const next = prev.filter((c) => c.id !== id);
+      setIndex((i) => (next.length === 0 ? 0 : Math.min(i, next.length - 1)));
+      return next;
+    });
+  };
+
+  const card = cards[index];
+  const progress = ((index + 1) / cards.length) * 100;
+
   return (
-    <table className="cards-table">
-      <thead>
-        <tr>
-          <th>Wort</th>
-          <th>Übersetzung</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {cards.map((card) => (
-          <tr key={card.id}>
-            <td data-label="Wort">{card.front}</td>
-            <td data-label="Übersetzung">{card.back || <em>—</em>}</td>
-            <td data-label="">
-              <button className="btn-delete" onClick={() => handleUnflag(card.id)}>
-                Entfernen
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div>
+      <p className="queue-counter">
+        {index + 1} / {cards.length}
+      </p>
+      <div className="progress-bar">
+        <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+      </div>
+      <div className={`card-slide card-slide-${direction}`} key={card.id}>
+        <Flashcard card={card} onToggleFlag={handleToggleFlag} />
+      </div>
+      <div className="browse-nav">
+        <button onClick={goPrev}>← Zurück</button>
+        <button onClick={goNext}>Weiter →</button>
+      </div>
+    </div>
   );
 }
