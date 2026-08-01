@@ -122,8 +122,8 @@ export default function CardList() {
           <tbody>
             {cards.map((card) => (
               <tr key={card.id}>
-                <td>{card.front}</td>
-                <td>
+                <td data-label="Wort">{card.front}</td>
+                <td data-label="Übersetzung">
                   <input
                     value={card.back || ''}
                     onChange={(e) => handleBackChange(card.id, e.target.value)}
@@ -131,7 +131,7 @@ export default function CardList() {
                     placeholder="Übersetzung hinzufügen"
                   />
                 </td>
-                <td>
+                <td data-label="">
                   <button className="btn-delete" onClick={() => handleDelete(card.id)}>
                     Löschen
                   </button>

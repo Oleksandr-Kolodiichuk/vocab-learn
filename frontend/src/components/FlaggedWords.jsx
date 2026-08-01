@@ -41,9 +41,9 @@ export default function FlaggedWords() {
       <tbody>
         {cards.map((card) => (
           <tr key={card.id}>
-            <td>{card.front}</td>
-            <td>{card.back || <em>—</em>}</td>
-            <td>
+            <td data-label="Wort">{card.front}</td>
+            <td data-label="Übersetzung">{card.back || <em>—</em>}</td>
+            <td data-label="">
               <button className="btn-delete" onClick={() => handleUnflag(card.id)}>
                 Entfernen
               </button>
