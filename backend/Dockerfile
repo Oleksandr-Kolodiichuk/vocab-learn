@@ -7,4 +7,4 @@ RUN npm install --omit=dev
 COPY . .
 
 EXPOSE 4000
-CMD ["node", "src/index.js"]
+CMD ["sh", "-c", "node src/db/migrate.js && node src/index.js"]
