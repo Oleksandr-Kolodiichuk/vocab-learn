@@ -73,16 +73,20 @@ export default function App() {
             <span>Unbekannt: {stats.flagged}</span>
           </div>
         )}
-        <nav className="tabs">
-          <button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>
-            Karten
-          </button>
-          <button className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>
-            Alle Karten
-          </button>
-          <button className={tab === 'flagged' ? 'active' : ''} onClick={() => setTab('flagged')}>
-            Unbekannt
-          </button>
+        <nav className="tabs-row">
+          <div className="tabs">
+            <button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>
+              Karten
+            </button>
+            <button className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>
+              Alle Karten
+            </button>
+          </div>
+          <div className="tabs tabs-flagged">
+            <button className={tab === 'flagged' ? 'active' : ''} onClick={() => setTab('flagged')}>
+              ★ Unbekannt
+            </button>
+          </div>
         </nav>
       </header>
       <main>

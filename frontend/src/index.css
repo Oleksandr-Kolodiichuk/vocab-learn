@@ -219,15 +219,31 @@ button:active {
   flex-wrap: wrap;
 }
 
+.tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
 .tabs {
   display: flex;
   gap: 0.3rem;
-  margin-bottom: 1.5rem;
   padding: 0.3rem;
   background: var(--surface-alt);
   border-radius: 12px;
   width: fit-content;
   max-width: 100%;
+}
+
+.tabs-flagged {
+  background: color-mix(in srgb, var(--warning) 14%, var(--surface-alt));
+}
+
+.tabs-flagged button.active {
+  background: var(--warning);
+  color: white;
 }
 
 .tabs button {
@@ -645,11 +661,21 @@ button:active {
     font-size: 0.75rem;
   }
 
+  .tabs-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
   .tabs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.3rem;
     width: 100%;
+  }
+
+  .tabs-flagged {
+    grid-template-columns: 1fr;
   }
 
   .tabs button {
