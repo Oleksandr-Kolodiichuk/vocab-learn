@@ -1,0 +1,420 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f5f7;
+  color: #1a1a1a;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+[data-theme='dark'] body {
+  background: #000000;
+  color: #f2f2f2;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.app-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.theme-toggle {
+  border: 1px solid #ccc;
+  background: transparent;
+  border-radius: 999px;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+[data-theme='dark'] .theme-toggle {
+  border-color: #3a3a3a;
+}
+
+.user-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+}
+
+.btn-logout {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+[data-theme='dark'] .btn-logout {
+  border-color: #3a3a3a;
+}
+
+.login-screen {
+  max-width: 360px;
+  margin: 15vh auto 0;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.login-screen h1 {
+  margin-bottom: 0.5rem;
+}
+
+.login-screen p {
+  opacity: 0.75;
+  margin-bottom: 1.5rem;
+}
+
+.login-screen > div {
+  display: flex;
+  justify-content: center;
+}
+
+.stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tabs button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: #4f46e5;
+  color: white;
+  border-color: #4f46e5;
+}
+
+.queue-counter {
+  text-align: center;
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.2);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #4f46e5, #16a34a, #4f46e5);
+  background-size: 200% 100%;
+  transition: width 0.4s cubic-bezier(0.4, 0.2, 0.2, 1);
+  animation: progress-shine 3s linear infinite;
+}
+
+@keyframes progress-shine {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.flip-card {
+  position: relative;
+  perspective: 1200px;
+  height: 280px;
+  cursor: pointer;
+}
+
+.flag-toggle {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  background: transparent;
+  color: #999;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.flag-toggle:hover {
+  transform: scale(1.15);
+}
+
+.flag-toggle.flagged {
+  color: #f59e0b;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  backface-visibility: hidden;
+}
+
+[data-theme='dark'] .flip-card-face {
+  background: #141414;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.browse-nav {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.browse-nav button {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.card-slide-next,
+.card-slide-prev {
+  perspective: 1400px;
+}
+
+@keyframes card-turn-next {
+  from {
+    opacity: 0;
+    transform: rotateY(-70deg) translateX(30%);
+    transform-origin: left center;
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0);
+    transform-origin: left center;
+  }
+}
+
+@keyframes card-turn-prev {
+  from {
+    opacity: 0;
+    transform: rotateY(70deg) translateX(-30%);
+    transform-origin: right center;
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0);
+    transform-origin: right center;
+  }
+}
+
+.card-slide-next {
+  animation: card-turn-next 0.4s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+
+.card-slide-prev {
+  animation: card-turn-prev 0.4s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: transparent;
+  cursor: pointer;
+}
+
+.import-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.import-form button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #16a34a;
+  color: white;
+  cursor: pointer;
+}
+
+.import-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.import-message {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.btn-delete-all {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #dc2626;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-delete-all:hover {
+  background: #b91c1c;
+}
+
+.search-form,
+.add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.search-form input,
+.add-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.search-form button,
+.add-form button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #4f46e5;
+  color: white;
+  cursor: pointer;
+}
+
+.cards-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cards-table th,
+.cards-table td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.cards-table input {
+  width: 100%;
+  padding: 0.35rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.btn-delete {
+  background: transparent;
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.error {
+  color: #dc2626;
+}
+
+[data-theme='dark'] .tabs button {
+  border-color: #3a3a3a;
+  color: #f2f2f2;
+}
+
+[data-theme='dark'] .search-form input,
+[data-theme='dark'] .add-form input,
+[data-theme='dark'] .cards-table input {
+  background: #141414;
+  border-color: #3a3a3a;
+  color: #f2f2f2;
+}
+
+[data-theme='dark'] .cards-table th,
+[data-theme='dark'] .cards-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .empty-state button {
+  border-color: #3a3a3a;
+  color: #f2f2f2;
+}
+
+[data-theme='dark'] .progress-bar {
+  background: rgba(255, 255, 255, 0.12);
+}

@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vocab}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vocab}
+      POSTGRES_DB: ${POSTGRES_DB:-vocab_learn}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vocab}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-vocab}:${POSTGRES_PASSWORD:-vocab}@db:5432/${POSTGRES_DB:-vocab_learn}
+      PORT: 4000
+      TELEGRAM_EXPORT_PATH: /telegram-export/result.json
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      SESSION_SECRET: ${SESSION_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./telegram-export:/telegram-export:ro
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  pgdata:
