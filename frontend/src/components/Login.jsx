@@ -43,9 +43,12 @@ export default function Login({ onLoggedIn }) {
 
   return (
     <div className="login-screen">
-      <h1>Vocab Learn</h1>
-      <p>Melde dich mit Google an, um deine Karten zu sehen.</p>
-      <div ref={buttonRef} />
+      <div className="login-card">
+        <div className="login-mark">📚</div>
+        <h1>Vocab Learn</h1>
+        <p>Melde dich mit Google an, um deine Karten zu sehen.</p>
+        <div ref={buttonRef} />
+      </div>
     </div>
   );
 }

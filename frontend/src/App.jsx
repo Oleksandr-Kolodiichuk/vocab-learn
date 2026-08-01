@@ -86,9 +86,11 @@ export default function App() {
         </nav>
       </header>
       <main>
-        {tab === 'review' && <ReviewSession />}
-        {tab === 'cards' && <CardList />}
-        {tab === 'flagged' && <FlaggedWords />}
+        <div className="tab-content" key={tab}>
+          {tab === 'review' && <ReviewSession />}
+          {tab === 'cards' && <CardList />}
+          {tab === 'flagged' && <FlaggedWords />}
+        </div>
       </main>
     </div>
   );
