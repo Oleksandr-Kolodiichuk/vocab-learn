@@ -1,20 +1,26 @@
 const express = require('express');
-const path = require('path');
-const { importTelegramFile } = require('../services/telegramImport');
+const multer = require('multer');
+const { importTelegramData } = require('../services/telegramImport');
 
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 
-router.post('/telegram', async (req, res, next) => {
+router.post('/telegram', upload.single('file'), async (req, res, next) => {
   try {
-    const filePath =
-      process.env.TELEGRAM_EXPORT_PATH ||
-      path.join(__dirname, '..', '..', '..', 'telegram-export', 'result.json');
-    const { imported, skipped } = await importTelegramFile(filePath, req.userId);
+    if (!req.file) {
+      return res.status(400).json({ error: 'Keine Datei hochgeladen' });
+    }
+
+    let data;
+    try {
+      data = JSON.parse(req.file.buffer.toString('utf-8'));
+    } catch {
+      return res.status(400).json({ error: 'Ungültige JSON-Datei' });
+    }
+
+    const { imported, skipped } = await importTelegramData(data, req.userId);
     res.json({ imported, skipped });
   } catch (err) {
-    if (err.code === 'FILE_NOT_FOUND') {
-      return res.status(404).json({ error: 'result.json wurde in telegram-export/ nicht gefunden' });
-    }
     next(err);
   }
 });

@@ -9,14 +9,7 @@ function extractText(text) {
   return '';
 }
 
-async function importTelegramFile(filePath, userId) {
-  if (!fs.existsSync(filePath)) {
-    const err = new Error(`File not found: ${filePath}`);
-    err.code = 'FILE_NOT_FOUND';
-    throw err;
-  }
-
-  const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+async function importTelegramData(data, userId) {
   const messages = data.messages || [];
 
   let imported = 0;
@@ -44,4 +37,15 @@ async function importTelegramFile(filePath, userId) {
   return { imported, skipped };
 }
 
-module.exports = { importTelegramFile, extractText };
+async function importTelegramFile(filePath, userId) {
+  if (!fs.existsSync(filePath)) {
+    const err = new Error(`File not found: ${filePath}`);
+    err.code = 'FILE_NOT_FOUND';
+    throw err;
+  }
+
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  return importTelegramData(data, userId);
+}
+
+module.exports = { importTelegramData, importTelegramFile, extractText };

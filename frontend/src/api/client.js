@@ -31,7 +31,21 @@ export const api = {
   deleteCard: (id) => request(`/cards/${id}`, { method: 'DELETE' }),
   deleteAllCards: () => request('/cards/all', { method: 'DELETE' }),
   getStats: () => request('/stats'),
-  importTelegram: () => request('/import/telegram', { method: 'POST' }),
+  importTelegram: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${BASE}/import/telegram`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+    if (res.status === 401) throw new UnauthorizedError('unauthorized');
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Request failed: ${res.status}`);
+    }
+    return res.json();
+  },
   getMe: () => request('/auth/me'),
   loginWithGoogle: (credential) =>
     request('/auth/google', { method: 'POST', body: JSON.stringify({ credential }) }),

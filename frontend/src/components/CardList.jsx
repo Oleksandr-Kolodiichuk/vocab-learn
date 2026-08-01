@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
 
 export default function CardList() {
@@ -9,6 +9,7 @@ export default function CardList() {
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
   const [importMessage, setImportMessage] = useState('');
+  const fileInputRef = useRef(null);
 
   const load = async (q = '') => {
     setLoading(true);
@@ -48,11 +49,15 @@ export default function CardList() {
     setCards((prev) => prev.filter((c) => c.id !== id));
   };
 
-  const handleImportTelegram = async () => {
+  const handleFileSelected = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+
     setImporting(true);
     setImportMessage('');
     try {
-      const { imported, skipped } = await api.importTelegram();
+      const { imported, skipped } = await api.importTelegram(file);
       setImportMessage(`Importiert: ${imported}, übersprungen: ${skipped}`);
       load(search);
     } catch (err) {
@@ -72,8 +77,15 @@ export default function CardList() {
   return (
     <div className="card-list">
       <div className="import-form">
-        <button onClick={handleImportTelegram} disabled={importing}>
-          {importing ? 'Importiere...' : 'Aus Telegram importieren'}
+        <input
+          type="file"
+          accept=".json,application/json"
+          ref={fileInputRef}
+          onChange={handleFileSelected}
+          style={{ display: 'none' }}
+        />
+        <button onClick={() => fileInputRef.current?.click()} disabled={importing}>
+          {importing ? 'Importiere...' : 'Telegram-Export auswählen'}
         </button>
         {importMessage && <span className="import-message">{importMessage}</span>}
         <button className="btn-delete-all" onClick={handleDeleteAll}>
