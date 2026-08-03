@@ -423,6 +423,51 @@ button:active {
   box-shadow: var(--shadow-lg);
 }
 
+.autoplay-controls {
+  max-width: 640px;
+  margin: 0.75rem auto 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.autoplay-toggle {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.autoplay-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.autoplay-toggle.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.autoplay-controls input[type='range'] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.autoplay-seconds {
+  flex: 0 0 auto;
+  min-width: 2.25rem;
+  text-align: right;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+
 .card-slide-next,
 .card-slide-prev {
   perspective: 1400px;
