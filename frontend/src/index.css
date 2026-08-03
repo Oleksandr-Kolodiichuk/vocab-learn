@@ -562,7 +562,7 @@ button:active {
   color: var(--text-muted);
 }
 
-.btn-delete-all {
+.import-form button.btn-delete-all {
   margin-left: auto;
   padding: 0.5rem 1rem;
   border-radius: 10px;
@@ -574,7 +574,7 @@ button:active {
   box-shadow: var(--shadow);
 }
 
-.btn-delete-all:hover {
+.import-form button.btn-delete-all:hover {
   background: var(--danger-hover);
   transform: translateY(-1px);
 }

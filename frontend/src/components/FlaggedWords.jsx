@@ -113,7 +113,7 @@ export default function FlaggedWords() {
         </button>
         <input
           type="range"
-          min="3"
+          min="1"
           max="20"
           step="1"
           value={autoplaySeconds}
