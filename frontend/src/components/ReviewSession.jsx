@@ -4,7 +4,7 @@ import Flashcard from './Flashcard';
 
 const LAST_CARD_KEY = 'vocab-learn:lastCardId';
 
-export default function ReviewSession() {
+export default function ReviewSession({ setId }) {
   const [cards, setCards] = useState(null);
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState('next');
@@ -14,7 +14,7 @@ export default function ReviewSession() {
 
   useEffect(() => {
     api
-      .getCards()
+      .getCards({ setId })
       .then((data) => {
         setCards(data);
         const lastId = Number(localStorage.getItem(LAST_CARD_KEY));

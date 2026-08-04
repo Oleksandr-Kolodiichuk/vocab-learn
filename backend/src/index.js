@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 
 const authRouter = require('./routes/auth');
 const cardsRouter = require('./routes/cards');
+const setsRouter = require('./routes/sets');
 const reviewRouter = require('./routes/review');
 const statsRouter = require('./routes/stats');
 const importRouter = require('./routes/import');
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRouter);
 app.use('/api/cards', requireAuth, cardsRouter);
+app.use('/api/sets', requireAuth, setsRouter);
 app.use('/api/review', requireAuth, reviewRouter);
 app.use('/api/stats', requireAuth, statsRouter);
 app.use('/api/import', requireAuth, importRouter);

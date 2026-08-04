@@ -219,6 +219,58 @@ button:active {
   flex-wrap: wrap;
 }
 
+.set-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.set-select {
+  flex: 0 1 auto;
+  max-width: 100%;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.set-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.set-action {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.set-action:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.set-action:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.set-action-delete:hover:not(:disabled) {
+  border-color: var(--danger);
+  color: var(--danger-hover);
+}
+
 .tabs-row {
   display: flex;
   align-items: center;
@@ -579,6 +631,49 @@ button:active {
   transform: translateY(-1px);
 }
 
+.backup-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.backup-form button {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.backup-form button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.backup-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.only-flagged-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.only-flagged-toggle input {
+  accent-color: var(--accent);
+}
+
 .search-form,
 .add-form {
   display: flex;
@@ -740,6 +835,23 @@ button:active {
 
   .import-form button {
     flex: 1 1 auto;
+  }
+
+  .set-switcher {
+    flex-wrap: wrap;
+  }
+
+  .set-select {
+    flex: 1 1 100%;
+  }
+
+  .backup-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .backup-form button {
+    width: 100%;
   }
 
   .btn-delete-all {

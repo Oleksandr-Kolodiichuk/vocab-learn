@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/client';
 
-export default function CardList() {
+export default function CardList({ setId, currentSet, onCardsChanged }) {
   const [cards, setCards] = useState([]);
   const [search, setSearch] = useState('');
   const [newFront, setNewFront] = useState('');
@@ -9,11 +9,15 @@ export default function CardList() {
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
   const [importMessage, setImportMessage] = useState('');
+  const [jsonImporting, setJsonImporting] = useState(false);
+  const [jsonMessage, setJsonMessage] = useState('');
+  const [onlyFlaggedExport, setOnlyFlaggedExport] = useState(false);
   const fileInputRef = useRef(null);
+  const jsonFileInputRef = useRef(null);
 
   const load = async (q = '') => {
     setLoading(true);
-    const data = await api.getCards(q);
+    const data = await api.getCards({ search: q, setId });
     setCards(data);
     setLoading(false);
   };
@@ -30,10 +34,11 @@ export default function CardList() {
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!newFront.trim()) return;
-    await api.createCard(newFront, newBack);
+    await api.createCard(newFront, newBack, setId);
     setNewFront('');
     setNewBack('');
     load(search);
+    onCardsChanged?.();
   };
 
   const handleBackChange = (id, back) => {
@@ -47,6 +52,7 @@ export default function CardList() {
   const handleDelete = async (id) => {
     await api.deleteCard(id);
     setCards((prev) => prev.filter((c) => c.id !== id));
+    onCardsChanged?.();
   };
 
   const handleFileSelected = async (e) => {
@@ -57,9 +63,10 @@ export default function CardList() {
     setImporting(true);
     setImportMessage('');
     try {
-      const { imported, skipped } = await api.importTelegram(file);
+      const { imported, skipped } = await api.importTelegram(file, setId);
       setImportMessage(`Importiert: ${imported}, übersprungen: ${skipped}`);
       load(search);
+      onCardsChanged?.();
     } catch (err) {
       setImportMessage(err.message);
     } finally {
@@ -67,11 +74,45 @@ export default function CardList() {
     }
   };
 
+  const handleJsonFileSelected = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setJsonImporting(true);
+    setJsonMessage('');
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const cardsToImport = Array.isArray(parsed) ? parsed : parsed.cards;
+      if (!Array.isArray(cardsToImport)) {
+        throw new Error('Ungültiges JSON-Format');
+      }
+      const { imported, skipped } = await api.importJson(setId, cardsToImport);
+      setJsonMessage(`Importiert: ${imported}, übersprungen: ${skipped}`);
+      load(search);
+      onCardsChanged?.();
+    } catch (err) {
+      setJsonMessage(err.message);
+    } finally {
+      setJsonImporting(false);
+    }
+  };
+
+  const handleExportJson = () => {
+    api.exportSetJson(setId, currentSet?.name, onlyFlaggedExport);
+  };
+
+  const handleExportPdf = () => {
+    api.exportSetPdf(setId, onlyFlaggedExport).catch((err) => setJsonMessage(err.message));
+  };
+
   const handleDeleteAll = async () => {
     if (cards.length === 0) return;
     if (!window.confirm(`Alle Karten löschen (${cards.length})? Dies kann nicht rückgängig gemacht werden.`)) return;
-    await api.deleteAllCards();
+    await api.deleteAllCards(setId);
     setCards([]);
+    onCardsChanged?.();
   };
 
   return (
@@ -91,6 +132,30 @@ export default function CardList() {
         <button className="btn-delete-all" onClick={handleDeleteAll}>
           Alles löschen
         </button>
+      </div>
+
+      <div className="backup-form">
+        <label className="only-flagged-toggle">
+          <input
+            type="checkbox"
+            checked={onlyFlaggedExport}
+            onChange={(e) => setOnlyFlaggedExport(e.target.checked)}
+          />
+          Nur unbekannte Wörter
+        </label>
+        <button onClick={handleExportJson}>JSON exportieren</button>
+        <button onClick={handleExportPdf}>PDF exportieren</button>
+        <input
+          type="file"
+          accept=".json,application/json"
+          ref={jsonFileInputRef}
+          onChange={handleJsonFileSelected}
+          style={{ display: 'none' }}
+        />
+        <button onClick={() => jsonFileInputRef.current?.click()} disabled={jsonImporting}>
+          {jsonImporting ? 'Importiere...' : 'JSON importieren'}
+        </button>
+        {jsonMessage && <span className="import-message">{jsonMessage}</span>}
       </div>
 
       <form className="search-form" onSubmit={handleSearch}>

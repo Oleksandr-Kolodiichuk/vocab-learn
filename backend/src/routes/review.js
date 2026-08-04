@@ -7,10 +7,16 @@ const router = express.Router();
 router.get('/due', async (req, res, next) => {
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
-    const { rows } = await pool.query(
-      'SELECT * FROM cards WHERE user_id = $1 AND due_at <= now() ORDER BY due_at ASC LIMIT $2',
-      [req.userId, limit]
-    );
+    const { setId } = req.query;
+    const params = [req.userId];
+    let query = 'SELECT * FROM cards WHERE user_id = $1 AND due_at <= now()';
+    if (setId) {
+      params.push(setId);
+      query += ` AND set_id = $${params.length}`;
+    }
+    params.push(limit);
+    query += ` ORDER BY due_at ASC LIMIT $${params.length}`;
+    const { rows } = await pool.query(query, params);
     res.json(rows);
   } catch (err) {
     next(err);

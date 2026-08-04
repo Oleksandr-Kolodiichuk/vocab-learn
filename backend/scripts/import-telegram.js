@@ -24,7 +24,20 @@ async function main() {
       process.exit(1);
     }
 
-    const { imported, skipped } = await importTelegramFile(filePath, user.id);
+    const { rows: setRows } = await pool.query(
+      'SELECT id FROM sets WHERE user_id = $1 ORDER BY id LIMIT 1',
+      [user.id]
+    );
+    let setId = setRows[0]?.id;
+    if (!setId) {
+      const { rows: created } = await pool.query(
+        "INSERT INTO sets (user_id, name) VALUES ($1, 'Meine Wörter') RETURNING id",
+        [user.id]
+      );
+      setId = created[0].id;
+    }
+
+    const { imported, skipped } = await importTelegramFile(filePath, user.id, setId);
     console.log(`Imported: ${imported}, skipped: ${skipped}`);
   } catch (err) {
     if (err.code === 'FILE_NOT_FOUND') {

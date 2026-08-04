@@ -35,6 +35,13 @@ router.post('/google', async (req, res, next) => {
     );
     const user = rows[0];
 
+    await pool.query(
+      `INSERT INTO sets (user_id, name)
+       SELECT $1, 'Meine Wörter'
+       WHERE NOT EXISTS (SELECT 1 FROM sets WHERE user_id = $1)`,
+      [user.id]
+    );
+
     const token = jwt.sign({ userId: user.id }, process.env.SESSION_SECRET, { expiresIn: '30d' });
     res.cookie('session', token, COOKIE_OPTIONS);
     res.json({ id: user.id, email: user.email, name: user.name, picture: user.picture });

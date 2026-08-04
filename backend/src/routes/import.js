@@ -10,6 +10,9 @@ router.post('/telegram', upload.single('file'), async (req, res, next) => {
     if (!req.file) {
       return res.status(400).json({ error: 'Keine Datei hochgeladen' });
     }
+    if (!req.body.setId) {
+      return res.status(400).json({ error: 'setId is required' });
+    }
 
     let data;
     try {
@@ -18,7 +21,7 @@ router.post('/telegram', upload.single('file'), async (req, res, next) => {
       return res.status(400).json({ error: 'Ungültige JSON-Datei' });
     }
 
-    const { imported, skipped } = await importTelegramData(data, req.userId);
+    const { imported, skipped } = await importTelegramData(data, req.userId, req.body.setId);
     res.json({ imported, skipped });
   } catch (err) {
     next(err);

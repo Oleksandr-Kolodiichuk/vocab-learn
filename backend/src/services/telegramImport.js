@@ -9,7 +9,7 @@ function extractText(text) {
   return '';
 }
 
-async function importTelegramData(data, userId) {
+async function importTelegramData(data, userId, setId) {
   const messages = data.messages || [];
 
   let imported = 0;
@@ -24,11 +24,11 @@ async function importTelegramData(data, userId) {
     }
 
     const result = await pool.query(
-      `INSERT INTO cards (front, source, telegram_message_id, user_id)
-       VALUES ($1, 'telegram', $2, $3)
-       ON CONFLICT (user_id, telegram_message_id) DO NOTHING
+      `INSERT INTO cards (front, source, telegram_message_id, user_id, set_id)
+       VALUES ($1, 'telegram', $2, $3, $4)
+       ON CONFLICT (user_id, set_id, telegram_message_id) DO NOTHING
        RETURNING id`,
-      [text, msg.id, userId]
+      [text, msg.id, userId, setId]
     );
     if (result.rows.length) imported += 1;
     else skipped += 1;
@@ -37,7 +37,7 @@ async function importTelegramData(data, userId) {
   return { imported, skipped };
 }
 
-async function importTelegramFile(filePath, userId) {
+async function importTelegramFile(filePath, userId, setId) {
   if (!fs.existsSync(filePath)) {
     const err = new Error(`File not found: ${filePath}`);
     err.code = 'FILE_NOT_FOUND';
@@ -45,7 +45,7 @@ async function importTelegramFile(filePath, userId) {
   }
 
   const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  return importTelegramData(data, userId);
+  return importTelegramData(data, userId, setId);
 }
 
 module.exports = { importTelegramData, importTelegramFile, extractText };

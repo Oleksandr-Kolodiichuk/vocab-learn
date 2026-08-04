@@ -3,9 +3,11 @@ import ReviewSession from './components/ReviewSession';
 import CardList from './components/CardList';
 import FlaggedWords from './components/FlaggedWords';
 import Login from './components/Login';
+import SetSwitcher from './components/SetSwitcher';
 import { api } from './api/client';
 
 const THEME_KEY = 'vocab-learn:theme';
+const SET_KEY = 'vocab-learn:currentSetId';
 
 function getInitialTheme() {
   const saved = localStorage.getItem(THEME_KEY);
@@ -19,6 +21,11 @@ export default function App() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [user, setUser] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [sets, setSets] = useState([]);
+  const [currentSetId, setCurrentSetId] = useState(() => {
+    const saved = Number(localStorage.getItem(SET_KEY));
+    return saved || null;
+  });
 
   useEffect(() => {
     api
@@ -28,10 +35,26 @@ export default function App() {
       .finally(() => setCheckingAuth(false));
   }, []);
 
+  const loadSets = () => {
+    api.getSets().then((data) => {
+      setSets(data);
+      setCurrentSetId((prev) => (prev && data.some((s) => s.id === prev) ? prev : data[0]?.id ?? null));
+    });
+  };
+
   useEffect(() => {
     if (!user) return;
-    api.getStats().then(setStats).catch(() => {});
-  }, [tab, user]);
+    loadSets();
+  }, [user]);
+
+  useEffect(() => {
+    if (currentSetId) localStorage.setItem(SET_KEY, currentSetId);
+  }, [currentSetId]);
+
+  useEffect(() => {
+    if (!user || !currentSetId) return;
+    api.getStats(currentSetId).then(setStats).catch(() => {});
+  }, [tab, user, currentSetId]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -43,6 +66,22 @@ export default function App() {
   const handleLogout = async () => {
     await api.logout().catch(() => {});
     setUser(null);
+  };
+
+  const handleCreateSet = async (name) => {
+    const created = await api.createSet(name);
+    setSets((prev) => [...prev, created]);
+    setCurrentSetId(created.id);
+  };
+
+  const handleRenameSet = async (id, name) => {
+    const updated = await api.renameSet(id, name);
+    setSets((prev) => prev.map((s) => (s.id === id ? { ...s, name: updated.name } : s)));
+  };
+
+  const handleDeleteSet = async (id) => {
+    await api.deleteSet(id);
+    loadSets();
   };
 
   if (checkingAuth) return null;
@@ -66,6 +105,14 @@ export default function App() {
             </button>
           </div>
         </div>
+        <SetSwitcher
+          sets={sets}
+          currentSetId={currentSetId}
+          onSelect={setCurrentSetId}
+          onCreate={handleCreateSet}
+          onRename={handleRenameSet}
+          onDelete={handleDeleteSet}
+        />
         {stats && (
           <div className="stats">
             <span>Gesamt: {stats.total}</span>
@@ -90,11 +137,13 @@ export default function App() {
         </nav>
       </header>
       <main>
-        <div className="tab-content" key={tab}>
-          {tab === 'review' && <ReviewSession />}
-          {tab === 'cards' && <CardList />}
-          {tab === 'flagged' && <FlaggedWords />}
-        </div>
+        {currentSetId && (
+          <div className="tab-content" key={`${tab}-${currentSetId}`}>
+            {tab === 'review' && <ReviewSession setId={currentSetId} />}
+            {tab === 'cards' && <CardList setId={currentSetId} currentSet={sets.find((s) => s.id === currentSetId)} onCardsChanged={loadSets} />}
+            {tab === 'flagged' && <FlaggedWords setId={currentSetId} />}
+          </div>
+        )}
       </main>
     </div>
   );
