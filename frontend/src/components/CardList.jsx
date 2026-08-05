@@ -174,7 +174,7 @@ export default function CardList({ setId, currentSet, onCardsChanged }) {
       </form>
 
       {loading ? (
-        <p>Wird geladen...</p>
+        <p className="loading-text">Wird geladen...</p>
       ) : (
         <div className="cards-table-wrapper">
           <table className="cards-table">

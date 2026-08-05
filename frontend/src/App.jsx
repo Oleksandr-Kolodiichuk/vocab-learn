@@ -104,7 +104,9 @@ export default function App() {
           <h1>Vocab Learn</h1>
           <div className="header-actions">
             <button className="theme-toggle" onClick={toggleTheme} aria-label="Theme wechseln">
-              {theme === 'dark' ? '☀️' : '🌙'}
+              <span className="theme-icon" key={theme}>
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </span>
             </button>
             {user.picture && <img className="user-avatar" src={user.picture} alt={user.name || user.email} />}
             <button className="btn-logout" onClick={handleLogout}>
@@ -122,9 +124,18 @@ export default function App() {
         />
         {stats && (
           <div className="stats">
-            <span>Gesamt: {stats.total}</span>
-            <span>Ohne Übersetzung: {stats.untranslated}</span>
-            <span>Unbekannt: {stats.flagged}</span>
+            <span>
+              Gesamt: <span className="stat-value" key={`total-${stats.total}`}>{stats.total}</span>
+            </span>
+            <span>
+              Ohne Übersetzung:{' '}
+              <span className="stat-value" key={`untranslated-${stats.untranslated}`}>
+                {stats.untranslated}
+              </span>
+            </span>
+            <span>
+              Unbekannt: <span className="stat-value" key={`flagged-${stats.flagged}`}>{stats.flagged}</span>
+            </span>
           </div>
         )}
         <nav className="tabs-row">

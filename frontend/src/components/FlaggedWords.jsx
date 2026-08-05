@@ -76,7 +76,7 @@ export default function FlaggedWords({ setId }) {
   }, [autoplay, autoplaySeconds, cards]);
 
   if (error) return <p className="error">Fehler: {error}</p>;
-  if (cards === null) return <p>Wird geladen...</p>;
+  if (cards === null) return <p className="loading-text">Wird geladen...</p>;
 
   if (cards.length === 0) {
     return (
