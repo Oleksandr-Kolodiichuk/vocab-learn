@@ -176,35 +176,37 @@ export default function CardList({ setId, currentSet, onCardsChanged }) {
       {loading ? (
         <p>Wird geladen...</p>
       ) : (
-        <table className="cards-table">
-          <thead>
-            <tr>
-              <th>Wort</th>
-              <th>Übersetzung</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {cards.map((card) => (
-              <tr key={card.id}>
-                <td data-label="Wort">{card.front}</td>
-                <td data-label="Übersetzung">
-                  <input
-                    value={card.back || ''}
-                    onChange={(e) => handleBackChange(card.id, e.target.value)}
-                    onBlur={(e) => handleBackSave(card.id, e.target.value)}
-                    placeholder="Übersetzung hinzufügen"
-                  />
-                </td>
-                <td data-label="">
-                  <button className="btn-delete" onClick={() => handleDelete(card.id)}>
-                    Löschen
-                  </button>
-                </td>
+        <div className="cards-table-wrapper">
+          <table className="cards-table">
+            <thead>
+              <tr>
+                <th>Wort</th>
+                <th>Übersetzung</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {cards.map((card) => (
+                <tr key={card.id}>
+                  <td data-label="Wort">{card.front}</td>
+                  <td data-label="Übersetzung">
+                    <input
+                      value={card.back || ''}
+                      onChange={(e) => handleBackChange(card.id, e.target.value)}
+                      onBlur={(e) => handleBackSave(card.id, e.target.value)}
+                      placeholder="Übersetzung hinzufügen"
+                    />
+                  </td>
+                  <td data-label="">
+                    <button className="btn-delete" onClick={() => handleDelete(card.id)}>
+                      Löschen
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

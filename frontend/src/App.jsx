@@ -22,6 +22,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [sets, setSets] = useState([]);
+  const [setsLoaded, setSetsLoaded] = useState(false);
   const [currentSetId, setCurrentSetId] = useState(() => {
     const saved = Number(localStorage.getItem(SET_KEY));
     return saved || null;
@@ -39,6 +40,7 @@ export default function App() {
     api.getSets().then((data) => {
       setSets(data);
       setCurrentSetId((prev) => (prev && data.some((s) => s.id === prev) ? prev : data[0]?.id ?? null));
+      setSetsLoaded(true);
     });
   };
 
@@ -66,6 +68,11 @@ export default function App() {
   const handleLogout = async () => {
     await api.logout().catch(() => {});
     setUser(null);
+  };
+
+  const handleCreateFirstSet = async () => {
+    const name = window.prompt('Name für dein erstes Set:', 'Meine Wörter');
+    if (name && name.trim()) await handleCreateSet(name.trim());
   };
 
   const handleCreateSet = async (name) => {
@@ -142,6 +149,12 @@ export default function App() {
             {tab === 'review' && <ReviewSession setId={currentSetId} />}
             {tab === 'cards' && <CardList setId={currentSetId} currentSet={sets.find((s) => s.id === currentSetId)} onCardsChanged={loadSets} />}
             {tab === 'flagged' && <FlaggedWords setId={currentSetId} />}
+          </div>
+        )}
+        {setsLoaded && !currentSetId && (
+          <div className="empty-state">
+            <p>Du hast noch kein Set — erstelle eines, um Karten hinzuzufügen</p>
+            <button onClick={handleCreateFirstSet}>Set erstellen</button>
           </div>
         )}
       </main>

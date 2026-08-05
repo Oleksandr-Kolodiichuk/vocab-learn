@@ -46,7 +46,7 @@ export default function SetSwitcher({ sets, currentSetId, onSelect, onCreate, on
         className="set-action set-action-delete"
         onClick={handleDelete}
         title="Set löschen"
-        disabled={!current || sets.length <= 1}
+        disabled={!current}
       >
         🗑
       </button>
