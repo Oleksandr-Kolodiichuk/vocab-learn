@@ -65,6 +65,15 @@ export default function WordMap({ setId }) {
   const handleDeletePin = async (pin) => {
     await api.deletePin(setId, pin.id);
     setPins((prev) => prev.filter((p) => p.id !== pin.id));
+    if (selectedCardId === pin.card_id) setSelectedCardId(null);
+  };
+
+  const handleDeleteAllPins = async () => {
+    if (pins.length === 0) return;
+    if (!window.confirm(`Alle ${pins.length} Markierungen von der Karte entfernen?`)) return;
+    await api.deleteAllPins(setId);
+    setPins([]);
+    setSelectedCardId(null);
   };
 
   if (loading) return <p className="loading-text">Wird geladen...</p>;
@@ -77,6 +86,10 @@ export default function WordMap({ setId }) {
     );
   }
 
+  const pinByCardId = new Map(pins.map((p) => [p.card_id, p]));
+  const unpinnedCards = cards.filter((c) => !pinByCardId.has(c.id));
+  const pinnedCards = cards.filter((c) => pinByCardId.has(c.id));
+
   return (
     <div className="word-map">
       <div className="word-map-sidebar">
@@ -85,32 +98,62 @@ export default function WordMap({ setId }) {
             ? 'Klicke jetzt auf die Karte, um das Wort dort zu platzieren'
             : 'Wähle unten ein Wort aus, dann klicke auf die Karte'}
         </p>
-        <div className="word-map-list">
-          {cards.map((card) => {
-            const pin = pins.find((p) => p.card_id === card.id);
-            return (
-              <div
-                key={card.id}
-                className={`word-map-item${selectedCardId === card.id ? ' selected' : ''}${
-                  pin ? ' pinned' : ''
-                }`}
-              >
-                <button className="word-map-item-select" onClick={() => handleSelectCard(card.id)}>
-                  <span className="word-map-item-front">{card.front}</span>
-                </button>
-                {pin && (
-                  <button
-                    className="word-map-pin-badge"
-                    title="Markierung von der Karte entfernen"
-                    onClick={() => handleDeletePin(pin)}
-                  >
-                    📍
+
+        <div className="word-map-section">
+          <div className="word-map-section-header">
+            <span>Alle Wörter ({unpinnedCards.length})</span>
+          </div>
+          <div className="word-map-list">
+            {unpinnedCards.length === 0 ? (
+              <p className="word-map-list-empty">Alle Wörter sind bereits platziert 🎉</p>
+            ) : (
+              unpinnedCards.map((card) => (
+                <div key={card.id} className={`word-map-item${selectedCardId === card.id ? ' selected' : ''}`}>
+                  <button className="word-map-item-select" onClick={() => handleSelectCard(card.id)}>
+                    <span className="word-map-item-front">{card.front}</span>
                   </button>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              ))
+            )}
+          </div>
         </div>
+
+        <div className="word-map-section">
+          <div className="word-map-section-header">
+            <span>Markiert ({pinnedCards.length})</span>
+            <button
+              className="word-map-clear-all"
+              onClick={handleDeleteAllPins}
+              disabled={pinnedCards.length === 0}
+            >
+              Alle entfernen
+            </button>
+          </div>
+          <div className="word-map-list">
+            {pinnedCards.length === 0 ? (
+              <p className="word-map-list-empty">Noch keine Wörter platziert</p>
+            ) : (
+              pinnedCards.map((card) => {
+                const pin = pinByCardId.get(card.id);
+                return (
+                  <div key={card.id} className="word-map-item pinned">
+                    <button className="word-map-item-select" onClick={() => handleSelectCard(card.id)}>
+                      <span className="word-map-item-front">{card.front}</span>
+                    </button>
+                    <button
+                      className="word-map-pin-badge"
+                      title="Markierung von der Karte entfernen"
+                      onClick={() => handleDeletePin(pin)}
+                    >
+                      📍
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
         {error && <p className="error">{error}</p>}
       </div>
       <div className="word-map-canvas">

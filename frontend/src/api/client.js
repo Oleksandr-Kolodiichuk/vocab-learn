@@ -111,6 +111,7 @@ export const api = {
   placePin: (setId, cardId, lat, lng) =>
     request(`/sets/${setId}/pins`, { method: 'POST', body: JSON.stringify({ cardId, lat, lng }) }),
   deletePin: (setId, pinId) => request(`/sets/${setId}/pins/${pinId}`, { method: 'DELETE' }),
+  deleteAllPins: (setId) => request(`/sets/${setId}/pins`, { method: 'DELETE' }),
   getMe: () => request('/auth/me'),
   loginWithGoogle: (credential) =>
     request('/auth/google', { method: 'POST', body: JSON.stringify({ credential }) }),

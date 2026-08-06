@@ -1135,8 +1135,59 @@ button:active {
   margin: 0;
 }
 
+.word-map-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.word-map-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.word-map-clear-all {
+  border: none;
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: none;
+  letter-spacing: normal;
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+}
+
+.word-map-clear-all:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+
+.word-map-clear-all:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.word-map-list-empty {
+  margin: 0;
+  padding: 0.7rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 .word-map-list {
   flex: 1;
+  min-height: 70px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

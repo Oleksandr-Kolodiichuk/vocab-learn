@@ -184,6 +184,21 @@ router.post('/:id/pins', async (req, res, next) => {
   }
 });
 
+router.delete('/:id/pins', async (req, res, next) => {
+  try {
+    const { rows: setRows } = await pool.query('SELECT id FROM sets WHERE id = $1 AND user_id = $2', [
+      req.params.id,
+      req.userId,
+    ]);
+    if (!setRows[0]) return res.status(404).json({ error: 'not found' });
+
+    await pool.query('DELETE FROM map_pins WHERE set_id = $1', [req.params.id]);
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.delete('/:id/pins/:pinId', async (req, res, next) => {
   try {
     const { rowCount } = await pool.query(
