@@ -16,6 +16,7 @@ L.Icon.Default.mergeOptions({
 
 const DEFAULT_CENTER = [48, 15];
 const DEFAULT_ZOOM = 4;
+const LABELS_KEY = 'vocab-learn:mapShowLabels';
 
 function ClickHandler({ onMapClick }) {
   useMapEvents({
@@ -32,6 +33,7 @@ export default function WordMap({ setId }) {
   const [loading, setLoading] = useState(true);
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [error, setError] = useState('');
+  const [showLabels, setShowLabels] = useState(() => localStorage.getItem(LABELS_KEY) !== 'false');
 
   useEffect(() => {
     setLoading(true);
@@ -41,6 +43,10 @@ export default function WordMap({ setId }) {
       setLoading(false);
     });
   }, [setId]);
+
+  useEffect(() => {
+    localStorage.setItem(LABELS_KEY, showLabels);
+  }, [showLabels]);
 
   const handleSelectCard = (id) => {
     setSelectedCardId((prev) => (prev === id ? null : id));
@@ -156,28 +162,41 @@ export default function WordMap({ setId }) {
 
         {error && <p className="error">{error}</p>}
       </div>
-      <div className="word-map-canvas">
-        <MapContainer center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} scrollWheelZoom>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <ClickHandler onMapClick={handleMapClick} />
-          {pins.map((pin) => (
-            <Marker key={pin.id} position={[pin.lat, pin.lng]}>
-              <Tooltip permanent direction="top" offset={[0, -32]} className="map-pin-label">
-                {pin.front}
-              </Tooltip>
-              <Popup>
-                <div className="map-pin-popup">
-                  <strong>{pin.front}</strong>
-                  {pin.back && <div className="map-pin-popup-back">{pin.back}</div>}
-                  <button onClick={() => handleDeletePin(pin)}>Löschen</button>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+      <div className="word-map-canvas-wrap">
+        <div className="word-map-toolbar">
+          <button
+            className={`word-map-labels-toggle${showLabels ? ' active' : ''}`}
+            onClick={() => setShowLabels((v) => !v)}
+            title={showLabels ? 'Wörter auf der Karte verbergen (Quiz-Modus)' : 'Wörter auf der Karte anzeigen'}
+          >
+            {showLabels ? '👁️ Wörter anzeigen' : '🙈 Wörter verborgen'}
+          </button>
+        </div>
+        <div className="word-map-canvas">
+          <MapContainer center={DEFAULT_CENTER} zoom={DEFAULT_ZOOM} scrollWheelZoom>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <ClickHandler onMapClick={handleMapClick} />
+            {pins.map((pin) => (
+              <Marker key={pin.id} position={[pin.lat, pin.lng]}>
+                {showLabels && (
+                  <Tooltip permanent direction="top" offset={[0, -32]} className="map-pin-label">
+                    {pin.front}
+                  </Tooltip>
+                )}
+                <Popup>
+                  <div className="map-pin-popup">
+                    <strong>{pin.front}</strong>
+                    {pin.back && <div className="map-pin-popup-back">{pin.back}</div>}
+                    <button onClick={() => handleDeletePin(pin)}>Löschen</button>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+        </div>
       </div>
     </div>
   );

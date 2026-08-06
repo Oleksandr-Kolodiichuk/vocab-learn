@@ -1274,9 +1274,45 @@ button:active {
   transform: scale(1.15) rotate(-8deg);
 }
 
-.word-map-canvas {
+.word-map-canvas-wrap {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.word-map-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.word-map-labels-toggle {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow);
+}
+
+.word-map-labels-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.word-map-labels-toggle.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.word-map-canvas {
+  flex: 1;
+  min-height: 0;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--border);
