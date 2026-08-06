@@ -1170,14 +1170,12 @@ button:active {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.5rem 0.7rem;
+  padding: 0.3rem 0.3rem 0.3rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
   color: var(--text);
-  cursor: pointer;
-  font-weight: 500;
-  text-align: left;
+  transition: border-color 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
 }
 
 .word-map-item:hover {
@@ -1197,8 +1195,32 @@ button:active {
   animation: pulse-ring 1.6s ease-in-out infinite;
 }
 
+.word-map-item-select {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+
 .word-map-pin-badge {
-  font-size: 0.9rem;
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.35rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.word-map-pin-badge:hover {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  transform: scale(1.15) rotate(-8deg);
 }
 
 .word-map-canvas {

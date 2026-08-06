@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -41,8 +41,6 @@ export default function WordMap({ setId }) {
       setLoading(false);
     });
   }, [setId]);
-
-  const pinnedCardIds = useMemo(() => new Set(pins.map((p) => p.card_id)), [pins]);
 
   const handleSelectCard = (id) => {
     setSelectedCardId((prev) => (prev === id ? null : id));
@@ -88,22 +86,30 @@ export default function WordMap({ setId }) {
             : 'Wähle unten ein Wort aus, dann klicke auf die Karte'}
         </p>
         <div className="word-map-list">
-          {cards.map((card) => (
-            <button
-              key={card.id}
-              className={`word-map-item${selectedCardId === card.id ? ' selected' : ''}${
-                pinnedCardIds.has(card.id) ? ' pinned' : ''
-              }`}
-              onClick={() => handleSelectCard(card.id)}
-            >
-              <span className="word-map-item-front">{card.front}</span>
-              {pinnedCardIds.has(card.id) && (
-                <span className="word-map-pin-badge" title="Bereits platziert">
-                  📍
-                </span>
-              )}
-            </button>
-          ))}
+          {cards.map((card) => {
+            const pin = pins.find((p) => p.card_id === card.id);
+            return (
+              <div
+                key={card.id}
+                className={`word-map-item${selectedCardId === card.id ? ' selected' : ''}${
+                  pin ? ' pinned' : ''
+                }`}
+              >
+                <button className="word-map-item-select" onClick={() => handleSelectCard(card.id)}>
+                  <span className="word-map-item-front">{card.front}</span>
+                </button>
+                {pin && (
+                  <button
+                    className="word-map-pin-badge"
+                    title="Markierung von der Karte entfernen"
+                    onClick={() => handleDeletePin(pin)}
+                  >
+                    📍
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
         {error && <p className="error">{error}</p>}
       </div>
