@@ -130,4 +130,73 @@ router.get('/:id/export-pdf', async (req, res, next) => {
   }
 });
 
+router.get('/:id/pins', async (req, res, next) => {
+  try {
+    const { rows: setRows } = await pool.query('SELECT id FROM sets WHERE id = $1 AND user_id = $2', [
+      req.params.id,
+      req.userId,
+    ]);
+    if (!setRows[0]) return res.status(404).json({ error: 'not found' });
+
+    const { rows } = await pool.query(
+      `SELECT p.id, p.card_id, p.lat, p.lng, c.front, c.back
+       FROM map_pins p
+       JOIN cards c ON c.id = p.card_id
+       WHERE p.set_id = $1
+       ORDER BY p.created_at ASC`,
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/:id/pins', async (req, res, next) => {
+  try {
+    const { cardId, lat, lng } = req.body;
+    if (!cardId || typeof lat !== 'number' || typeof lng !== 'number') {
+      return res.status(400).json({ error: 'cardId, lat and lng are required' });
+    }
+
+    const { rows: setRows } = await pool.query('SELECT id FROM sets WHERE id = $1 AND user_id = $2', [
+      req.params.id,
+      req.userId,
+    ]);
+    if (!setRows[0]) return res.status(404).json({ error: 'not found' });
+
+    const { rows: cardRows } = await pool.query(
+      'SELECT id FROM cards WHERE id = $1 AND set_id = $2 AND user_id = $3',
+      [cardId, req.params.id, req.userId]
+    );
+    if (!cardRows[0]) return res.status(404).json({ error: 'card not found in this set' });
+
+    const { rows } = await pool.query(
+      `INSERT INTO map_pins (set_id, card_id, lat, lng)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (card_id) DO UPDATE SET lat = EXCLUDED.lat, lng = EXCLUDED.lng
+       RETURNING id, card_id, lat, lng`,
+      [req.params.id, cardId, lat, lng]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/:id/pins/:pinId', async (req, res, next) => {
+  try {
+    const { rowCount } = await pool.query(
+      `DELETE FROM map_pins
+       WHERE id = $1 AND set_id = $2
+         AND EXISTS (SELECT 1 FROM sets WHERE id = $2 AND user_id = $3)`,
+      [req.params.pinId, req.params.id, req.userId]
+    );
+    if (!rowCount) return res.status(404).json({ error: 'not found' });
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

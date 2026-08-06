@@ -4,6 +4,7 @@ import CardList from './components/CardList';
 import FlaggedWords from './components/FlaggedWords';
 import Login from './components/Login';
 import SetSwitcher from './components/SetSwitcher';
+import WordMap from './components/WordMap';
 import { api } from './api/client';
 
 const THEME_KEY = 'vocab-learn:theme';
@@ -146,6 +147,9 @@ export default function App() {
             <button className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>
               Alle Karten
             </button>
+            <button className={tab === 'map' ? 'active' : ''} onClick={() => setTab('map')}>
+              🗺️ Karte
+            </button>
           </div>
           <div className="tabs tabs-flagged">
             <button className={tab === 'flagged' ? 'active' : ''} onClick={() => setTab('flagged')}>
@@ -160,6 +164,7 @@ export default function App() {
             {tab === 'review' && <ReviewSession setId={currentSetId} />}
             {tab === 'cards' && <CardList setId={currentSetId} currentSet={sets.find((s) => s.id === currentSetId)} onCardsChanged={loadSets} />}
             {tab === 'flagged' && <FlaggedWords setId={currentSetId} />}
+            {tab === 'map' && <WordMap setId={currentSetId} />}
           </div>
         )}
         {setsLoaded && !currentSetId && (

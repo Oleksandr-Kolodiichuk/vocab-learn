@@ -1116,6 +1116,165 @@ button:active {
   color: var(--danger);
 }
 
+.word-map {
+  display: flex;
+  gap: 1rem;
+  height: min(70vh, 700px);
+}
+
+.word-map-sidebar {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.word-map-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.word-map-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.word-map-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.word-map-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.word-map-list::-webkit-scrollbar-thumb {
+  background-color: var(--accent);
+  border-radius: 999px;
+  border: 2px solid var(--surface);
+  background-clip: padding-box;
+}
+
+.word-map-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 500;
+  text-align: left;
+}
+
+.word-map-item:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.word-map-item.pinned {
+  color: var(--text-muted);
+}
+
+.word-map-item.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  font-weight: 600;
+  animation: pulse-ring 1.6s ease-in-out infinite;
+}
+
+.word-map-pin-badge {
+  font-size: 0.9rem;
+}
+
+.word-map-canvas {
+  flex: 1;
+  min-width: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.word-map-canvas .leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: var(--surface-alt);
+  font-family: inherit;
+}
+
+.map-pin-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+.map-pin-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 120px;
+}
+
+.map-pin-popup-back {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.map-pin-popup button {
+  align-self: flex-start;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.map-pin-popup button:hover {
+  background: var(--danger);
+  color: white;
+}
+
+@media (max-width: 700px) {
+  .word-map {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .word-map-sidebar {
+    flex: none;
+  }
+
+  .word-map-list {
+    max-height: 220px;
+  }
+
+  .word-map-canvas {
+    height: min(60vh, 480px);
+  }
+}
+
 @media (max-width: 600px) {
   .app-header h1 {
     font-size: 1.25rem;
@@ -1149,9 +1308,14 @@ button:active {
 
   .tabs {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.3rem;
     width: 100%;
+  }
+
+  .tabs button {
+    padding: 0.5rem 0.15rem;
+    font-size: 0.78rem;
   }
 
   .tabs-flagged {

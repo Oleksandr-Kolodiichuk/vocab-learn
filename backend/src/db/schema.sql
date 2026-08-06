@@ -61,3 +61,15 @@ CREATE TABLE IF NOT EXISTS review_log (
 );
 
 CREATE INDEX IF NOT EXISTS idx_cards_due_at ON cards (due_at);
+
+CREATE TABLE IF NOT EXISTS map_pins (
+  id SERIAL PRIMARY KEY,
+  set_id INTEGER NOT NULL REFERENCES sets(id) ON DELETE CASCADE,
+  card_id INTEGER NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+  lat DOUBLE PRECISION NOT NULL,
+  lng DOUBLE PRECISION NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_map_pins_card ON map_pins (card_id);
+CREATE INDEX IF NOT EXISTS idx_map_pins_set_id ON map_pins (set_id);

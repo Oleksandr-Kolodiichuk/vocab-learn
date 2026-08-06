@@ -107,6 +107,10 @@ export const api = {
     const safeName = (setName || 'set').replace(/[^\p{L}\p{N}_-]+/gu, '_');
     downloadJson(`${safeName}.json`, payload);
   },
+  getSetPins: (setId) => request(`/sets/${setId}/pins`),
+  placePin: (setId, cardId, lat, lng) =>
+    request(`/sets/${setId}/pins`, { method: 'POST', body: JSON.stringify({ cardId, lat, lng }) }),
+  deletePin: (setId, pinId) => request(`/sets/${setId}/pins/${pinId}`, { method: 'DELETE' }),
   getMe: () => request('/auth/me'),
   loginWithGoogle: (credential) =>
     request('/auth/google', { method: 'POST', body: JSON.stringify({ credential }) }),
