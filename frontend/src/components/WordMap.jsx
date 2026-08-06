@@ -74,6 +74,17 @@ export default function WordMap({ setId }) {
     if (selectedCardId === pin.card_id) setSelectedCardId(null);
   };
 
+  const handlePinDragEnd = async (pin, e) => {
+    const { lat, lng } = e.target.getLatLng();
+    try {
+      const updated = await api.placePin(setId, pin.card_id, lat, lng);
+      setPins((prev) => prev.map((p) => (p.id === pin.id ? { ...p, lat: updated.lat, lng: updated.lng } : p)));
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleDeleteAllPins = async () => {
     if (pins.length === 0) return;
     if (!window.confirm(`Alle ${pins.length} Markierungen von der Karte entfernen?`)) return;
@@ -102,7 +113,7 @@ export default function WordMap({ setId }) {
         <p className="word-map-hint">
           {selectedCardId
             ? 'Klicke jetzt auf die Karte, um das Wort dort zu platzieren'
-            : 'Wähle unten ein Wort aus, dann klicke auf die Karte'}
+            : 'Wähle unten ein Wort aus, dann klicke auf die Karte. Gesetzte Pins kannst du direkt auf der Karte verschieben.'}
         </p>
 
         <div className="word-map-section">
@@ -180,7 +191,12 @@ export default function WordMap({ setId }) {
             />
             <ClickHandler onMapClick={handleMapClick} />
             {pins.map((pin) => (
-              <Marker key={pin.id} position={[pin.lat, pin.lng]}>
+              <Marker
+                key={pin.id}
+                position={[pin.lat, pin.lng]}
+                draggable
+                eventHandlers={{ dragend: (e) => handlePinDragEnd(pin, e) }}
+              >
                 {showLabels && (
                   <Tooltip permanent direction="top" offset={[0, -32]} className="map-pin-label">
                     {pin.front}
