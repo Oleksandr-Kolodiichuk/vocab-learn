@@ -52,7 +52,7 @@ export default function WordMap({ setId }) {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([api.getCards({ setId }), api.getSetPins(setId)]).then(([cardsData, pinsData]) => {
+    Promise.all([api.getFlaggedCards(setId), api.getSetPins(setId)]).then(([cardsData, pinsData]) => {
       setCards(cardsData);
       setPins(pinsData);
       setLoading(false);
@@ -113,7 +113,10 @@ export default function WordMap({ setId }) {
   if (cards.length === 0) {
     return (
       <div className="empty-state">
-        <p>Noch keine Karten in diesem Set — füge zuerst Wörter hinzu, um sie auf der Karte zu platzieren</p>
+        <p>
+          Noch keine unbekannten Wörter (★) in diesem Set — markiere zuerst Wörter als unbekannt, um sie auf
+          der Karte zu platzieren
+        </p>
       </div>
     );
   }
@@ -133,11 +136,11 @@ export default function WordMap({ setId }) {
 
         <div className="word-map-section">
           <div className="word-map-section-header">
-            <span>Alle Wörter ({unpinnedCards.length})</span>
+            <span>★ Unbekannt ({unpinnedCards.length})</span>
           </div>
           <div className="word-map-list">
             {unpinnedCards.length === 0 ? (
-              <p className="word-map-list-empty">Alle Wörter sind bereits platziert 🎉</p>
+              <p className="word-map-list-empty">Alle unbekannten Wörter sind bereits platziert 🎉</p>
             ) : (
               unpinnedCards.map((card) => (
                 <div key={card.id} className={`word-map-item${selectedCardId === card.id ? ' selected' : ''}`}>
