@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -24,6 +24,21 @@ function ClickHandler({ onMapClick }) {
       onMapClick(e.latlng);
     },
   });
+  return null;
+}
+
+// Leaflet measures its container once on mount; if the surrounding flex/responsive
+// layout hasn't settled yet (common on mobile), the map can end up sized to 0.
+// Re-measure whenever the container itself resizes so it always fills its box.
+function ResizeFix() {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    map.invalidateSize();
+    const observer = new ResizeObserver(() => map.invalidateSize());
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [map]);
   return null;
 }
 
@@ -190,6 +205,7 @@ export default function WordMap({ setId }) {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <ClickHandler onMapClick={handleMapClick} />
+            <ResizeFix />
             {pins.map((pin) => (
               <Marker
                 key={pin.id}
